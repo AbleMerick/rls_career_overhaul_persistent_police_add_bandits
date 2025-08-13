@@ -17,6 +17,7 @@ function C:init()
   self.cooldownTimer = -1
   self.driveInLane = true
   self.validTargets = {}
+  self.stoppedTimer = 0
   self.actions = {
     pursuitStart = function (args)
       local firstMode = 'chase'
@@ -151,6 +152,16 @@ function C:onRefresh()
 end
 
 function C:onTrafficTick(dt)
+  if self.veh.speed > 1.39 or self.flags.pursuit then
+    self.stoppedTimer = 0
+  else
+    self.stoppedTimer = self.stoppedTimer + dt
+    if self.stoppedTimer > 30 then
+      gameplay_traffic.removeTraffic(self.veh.id, true)
+      return
+    end
+  end
+
   for id, veh in pairs(gameplay_traffic.getTrafficData()) do -- update data of potential targets
     if id ~= self.veh.id and veh.role.name ~= 'police' and not veh.ignorePolice and not self.flags.cooldown then
       if not self.validTargets[id] then self.validTargets[id] = {} end
