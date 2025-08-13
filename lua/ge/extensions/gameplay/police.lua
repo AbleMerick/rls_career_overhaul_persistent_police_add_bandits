@@ -127,6 +127,19 @@ local function removeProp(propId) -- removes a prop from the props list
   end
 end
 
+local function spawnPersistent(amount)
+  if type(amount) ~= 'number' or amount <= 0 then return end
+
+  local group = gameplay_traffic_trafficUtils.createPoliceGroup(amount)
+  local ids = core_multiSpawn.spawnGroup(group, amount)
+
+  if type(ids) == 'table' then
+    for _, id in ipairs(ids) do
+      gameplay_traffic.insertTraffic(id, false, true)
+    end
+  end
+end
+
 local function resetPursuitVars() -- resets pursuit variables to default
   vars = {
     scoreLevels = deepcopy(defaultScoreLevels),
@@ -773,6 +786,7 @@ end
 -- public interface
 M.insertProp = insertProp
 M.removeProp = removeProp
+M.spawnPersistent = spawnPersistent
 M.setPropsActive = setPropsActive
 M.checkRoadblock = checkRoadblock
 M.placeRoadblock = placeRoadblock

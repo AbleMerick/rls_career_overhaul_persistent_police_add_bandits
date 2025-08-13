@@ -142,12 +142,11 @@ local function setupTraffic(forceSetup)
       end
     end
 
-    -- police amount and vehicle pooling
+    -- police amount
     local policeAmount = M.debugMode and testTrafficAmounts.police or 2 -- temporarily disabled by default
     if isNoPoliceModActive() then
       policeAmount = 0
     end
-    local extraAmount = policeAmount -- enables traffic pooling
     playerData.trafficActive = restrict and testTrafficAmounts.active or amount -- store the amount here for future usage
     if playerData.trafficActive == 0 then
       playerData.trafficActive = math.huge
@@ -156,11 +155,11 @@ local function setupTraffic(forceSetup)
     -- this will spawn vehicles near the center of the map (player vehicle not ready yet)
     -- if this would wait until player vehicle active, then the loading screen would fade out early...
     gameplay_parking.setupVehicles(restrict and testTrafficAmounts.parkedCars or parkedAmount)
-    gameplay_traffic.setupTraffic(restrict and testTrafficAmounts.traffic + extraAmount or amount + extraAmount, 0, {
-      policeAmount = policeAmount,
+    gameplay_traffic.setupTraffic(restrict and testTrafficAmounts.traffic or amount, 0, {
       simpleVehs = true,
       autoLoadFromFile = true
     })
+    gameplay_police.spawnPersistent(policeAmount)
     setTrafficVars()
 
     M.ensureTraffic = false
