@@ -23,6 +23,7 @@ function C:init()
       local firstMode = 'chase'
       local modeNum = 0
       local obj = getObjectByID(self.veh.id)
+      gameplay_traffic.getTrafficData()[self.veh.id].ignoreVehPool = true
 
       if self.veh.isAi then
         obj:queueLuaCommand('ai.setSpeedMode("off")')
@@ -62,6 +63,7 @@ function C:init()
       end
     end,
     pursuitEnd = function ()
+      gameplay_traffic.getTrafficData()[self.veh.id].ignoreVehPool = nil
       if self.veh.isAi then
         self.veh:setAiMode('stop')
         getObjectByID(self.veh.id):queueLuaCommand('electrics.set_lightbar_signal(1)')
