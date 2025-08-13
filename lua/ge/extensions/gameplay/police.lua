@@ -297,7 +297,8 @@ local function setSuspectTimer(time) -- sets the time until the next suspect wil
 end
 
 local function arrestVehicle(id, showMessages) -- instantly sets a vehicle as arrested
-  local veh = gameplay_traffic.getTrafficData()[id]
+  local traffic = gameplay_traffic.getTrafficData()
+  local veh = traffic[id]
   if not veh then return end
   -- works as intended if the target vehicle role is 'suspect'
 
@@ -333,6 +334,15 @@ local function arrestVehicle(id, showMessages) -- instantly sets a vehicle as ar
     end
   end
   setPursuitMode(-1, id, tempIds)
+
+  if id == be:getPlayerVehicleID(0) then
+    for _, pid in ipairs(tempIds) do
+      local pVeh = traffic[pid]
+      if pVeh then
+        pVeh.queuedFuncs.removeAfterArrest = {timer = vars.arrestTime + 1, func = gameplay_traffic.removeTraffic, args = {pid, true}}
+      end
+    end
+  end
 end
 
 local function evadeVehicle(id, showMessages) -- instantly sets a vehicle as evaded
